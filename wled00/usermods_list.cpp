@@ -185,6 +185,13 @@
 #include "../usermods/pwm_outputs/usermod_pwm_outputs.h"
 #endif
 
+#ifdef USERMOD_SHT
+#include "../usermods/sht/usermod_sht.h"
+#endif
+
+#ifdef USERMOD_BLE_2_JSON
+  #include "../usermods/Ble2Json_v2/usermod_v2_ble2json.h"
+#endif
 
 void registerUsermods()
 {
@@ -346,6 +353,10 @@ void registerUsermods()
   usermods.add(new PwmOutputsUsermod());
   #endif
 
+  #ifdef USERMOD_BLE_2_JSON
+  usermods.add(new Ble2JsonUsermod());
+  #endif
+  
   #ifdef USERMOD_SHT
   usermods.add(new ShtUsermod());
   #endif
