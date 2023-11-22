@@ -197,6 +197,10 @@
 #include "../usermods/pwm_outputs/usermod_pwm_outputs.h"
 #endif
 
+#ifdef USERMOD_POV_DISPLAY
+#include "../usermods/pov_display/usermod_pov_display.h"
+#endif
+
 
 void registerUsermods()
 {
@@ -372,5 +376,9 @@ void registerUsermods()
 
   #ifdef USERMOD_INTERNAL_TEMPERATURE
   usermods.add(new InternalTemperatureUsermod());
+  #endif
+
+  #ifdef USERMOD_POV_DISPLAY
+    usermods.add(new PovDisplayUsermod());
   #endif
 }
