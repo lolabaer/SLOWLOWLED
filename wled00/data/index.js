@@ -11,6 +11,7 @@ var csel = 0; // selected color slot (0-2)
 var currentPreset = -1;
 var lastUpdate = 0;
 var segCount = 0, ledCount = 0, lowestUnused = 0, maxSeg = 0, lSeg = 0;
+var image_list = [];
 var pcMode = false, pcModeA = false, lastw = 0, wW;
 var tr = 7;
 var d = document;
@@ -203,6 +204,7 @@ function loadSkinCSS(cId)
 function getURL(path) {
 	return (loc ? locproto + "//" + locip : "") + path;
 }
+
 function onLoad()
 {
 	let l = window.location;
@@ -261,21 +263,23 @@ function onLoad()
 	updateTablinks(0);
 	pmtLS = localStorage.getItem('wledPmt');
 
-	// Load initial data
-	loadPalettes(()=>{
-		// fill effect extra data array
-		loadFXData(()=>{
-			// load and populate effects
-			loadFX(()=>{
-				setTimeout(()=>{ // ESP8266 can't handle quick requests
-					loadPalettesData(()=>{
-						requestJson();// will load presets and create WS
-					});
-				},100);
+        // Load initial data
+        loadPalettes(()=>{
+	    // fill effect extra data array
+	    loadFXData(()=>{
+		// load and populate effects
+		loadFX(()=>{
+		    // load available files for file selector
+		    setTimeout(()=>{ // ESP8266 can't handle quick requests
+			loadPalettesData(()=>{
+			    requestJson();// will load presets and create WS
 			});
+		    },100);
 		});
+	    });
 	});
-	resetUtil();
+
+        resetUtil();
 
 	d.addEventListener("visibilitychange", handleVisibilityChange, false);
 	//size();
@@ -545,6 +549,34 @@ function loadFXData(callback = null)
 	});
 }
 
+function getImages()
+{
+    if (image_list.length === 0)
+	fetch(getURL('/edit?list=/'), {
+	    method: 'get'
+	}).then((res)=>{
+	    if (!res.ok) showErrorToast();
+	    return res.json();
+	}).then((json)=>{
+	    allowed_extensions = ['png', 'gif'];
+	    for (const [key, file] of Object.entries(json))
+		if ( allowed_extensions.includes(file.name.substr(-3)))
+		    image_list.push(file.name);
+	}).catch((e)=>{
+	    fxdata = [];
+	    showToast(e, true);
+	});
+
+    html = '<datalist id="images">';
+    for (file of image_list) {
+	basename = file.substr(1, file.length - 5);
+	html+= '<option value="' + file + '">' + basename + '</option>';
+    }
+
+    html+='</datalist>';
+    return html;
+}
+
 var pQL = [];
 function populateQL()
 {
@@ -702,7 +734,7 @@ ${inforow("Environment",i.arch + " " + i.core + " (" + i.lwip + ")")}
 
 function populateSegments(s)
 {
-	var cn = "";
+        var cn = getImages();
 	let li = lastinfo;
 	segCount = 0; lowestUnused = 0; lSeg = 0;
 
@@ -774,8 +806,8 @@ function populateSegments(s)
 				`<i class="icons e-icon flr" id="sege${i}" onclick="expand(${i})">&#xe395;</i>`+
 				(cfg.comp.segpwr ? segp : '') +
 				`<div class="segin" id="seg${i}in">`+
-					`<input type="text" class="ptxt" id="seg${i}t" autocomplete="off" maxlength=${li.arch=="esp8266"?32:64} value="${inst.n?inst.n:""}" placeholder="Enter name..."/>`+
-					`<table class="infot segt">`+
+                                       `<input type="text" class="ptxt" id="seg${i}t" autocomplete="off" maxlength=${li.arch=="esp8266"?32:64} value="${inst.n?inst.n:""}" placeholder="Enter name..." list="images"/>`+
+	                                `<table class="infot segt">`+
 					`<tr>`+
 						`<td>${isMSeg?'Start X':'Start LED'}</td>`+
 						`<td>${isMSeg?(cfg.comp.seglen?"Width":"Stop X"):(cfg.comp.seglen?"LED count":"Stop LED")}</td>`+
@@ -822,7 +854,7 @@ function populateSegments(s)
 			`</div>`;
 	}
 
-	gId('segcont').innerHTML = cn;
+        gId('segcont').innerHTML = cn;
 	let noNewSegs = (lowestUnused >= maxSeg);
 	resetUtil(noNewSegs);
 	if (gId('selall')) gId('selall').checked = true;
@@ -888,7 +920,7 @@ function populateEffects()
 					if (m.includes('1')) nm += "&#8942;"; // 1D effects
 					if (m.includes('2')) nm += "&#9638;"; // 2D effects
 					if (m.includes('v')) nm += "&#9834;"; // volume effects
-					if (m.includes('f')) nm += "&#9835;"; // frequency effects
+				        if (m.includes('f')) nm += "&#9835;"; // frequency effects
 				}
 			}
 			html += generateListItemHtml('fx',id,nm,'setFX','',fd);
@@ -1483,7 +1515,8 @@ function setEffectParameters(idx)
 	var slOnOff = (effectPars.length==0 || effectPars[0]=='')?[]:effectPars[0].split(",");
 	var coOnOff = (effectPars.length<2  || effectPars[1]=='')?[]:effectPars[1].split(",");
 	var paOnOff = (effectPars.length<3  || effectPars[2]=='')?[]:effectPars[2].split(",");
-
+        var flags = (effectPars.length<4 || effectPars[3]=='')?[]:effectPars[3];
+        if(flags.includes('s')) toggleFileSelector();
 	// set html slider items on/off
 	let nSliders = 5;
 	for (let i=0; i<nSliders; i++) {
@@ -2288,6 +2321,12 @@ function setCustom(i=1)
 	else if (i===2) obj.seg.c2 = val;
 	else            obj.seg.c1 = val;
 	requestJson(obj);
+}
+
+function setFile($seg)
+{
+    var obj = {"seg":{"id":0,"fx":114,"name":gId('selectFile').value}};
+    requestJson(obj);
 }
 
 function setOption(i=1, v=false)
