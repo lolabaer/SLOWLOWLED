@@ -9,7 +9,7 @@ This is ideal for creating a responsive setup that changes based on environmenta
 
 ---
 
-### Example Usage
+## Example Usage
 - Use a liquid level sensor to trigger a green hue when tank is full or a red hue when empty.
 - Use a light sensor to trigger a calm effect during nighttime or an energetic effect when it's daylight.
 
@@ -70,7 +70,7 @@ Here are the configurable options - (Find them in "Settings" > "Usermods")
 
 ---
 
-### Installation
+## Installation
 To enable this usermod, add the following new line under "build_flags =" for your board:
 ```
 -D USERMOD_CONDITIONAL_TRIGGERING
