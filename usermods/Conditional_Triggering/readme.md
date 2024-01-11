@@ -32,10 +32,7 @@ Having a 'triggering' preset means that preset X and preset Y can still be used 
 ## Create the 'triggering' preset
 - Add a new preset
 - Untick 'Use current state'
-- Add the following 'do nothing' API command:
-'''
-&NN
-'''
+- Add the following 'do nothing' API command: "&NN"
 - Set the preset ID to: **99**
 
 ![Screenshot The 'Triggering Preset' Configuration](./assets/trigger_preset.jpg)
