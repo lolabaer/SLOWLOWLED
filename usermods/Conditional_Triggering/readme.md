@@ -38,7 +38,7 @@ Having a 'triggering' preset means that preset X and preset Y can still be used 
 '''
 - Set the preset ID to: **99**
 
-![Screenshot The 'Triggering Preset' Configuration](.\assets\trigger_preset.jpg)
+![Screenshot The 'Triggering Preset' Configuration](./assets/trigger_preset.jpg)
 
 ---
 
