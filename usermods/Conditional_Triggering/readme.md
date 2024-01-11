@@ -31,7 +31,7 @@ Having a 'triggering' preset means that preset X and preset Y can still be used 
 
 ## Create the 'triggering' preset
 - Add a new preset
-- Untick 'Overwrite with state'
+- Untick 'Use current state'
 - Add the following 'do nothing' API command:
 '''
 &NN
