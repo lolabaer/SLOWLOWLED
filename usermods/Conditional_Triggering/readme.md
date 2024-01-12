@@ -28,10 +28,10 @@ This is ideal for creating a responsive setup that changes based on environmenta
 
 ### How to use
 
-**Triggering mode**
+- **Triggering mode**: 
 When you activate the 'triggering' preset, the sensor's state is first evaluated, then another preset is activated (either preset A or preset B), depending on whether the sensor is open or closed.
 
-**Auto-toggle mode**
+- **Auto-toggle mode**: 
 Automatic switching between Preset A and Preset B based on changes in the sensor's state. If Preset A or B is currently active and the sensor state changes, the system will automatically switch to the other preset.
 
 
@@ -58,19 +58,19 @@ Find these in the user interface, under "Settings" > "Usermods".
 
 ![Screenshot of The Usermod Settings Page](./assets/usermod_settings.jpg "Screenshot of The Usermod Settings Page")
 
-**Sensor Pin**: Set the GPIO pin that your sensor/switch is connected to.
+- **Sensor Pin**: Set the GPIO pin that your sensor/switch is connected to.
 
-**Sensor Type**: Choose between "Normally Open" or "Normally Closed" sensor/switch type.
+- **Sensor Type**: Choose between "Normally Open" or "Normally Closed" sensor/switch type.
 
-**Sensor Debounce**: Enable or disable debouncing for the sensor/switch. (Cleans up noisy sensor/switch signals).
+- **Sensor Debounce**: Enable or disable debouncing for the sensor/switch. (Cleans up noisy sensor/switch signals).
 
-**Auto-Toggle Presets With Sensor** - If the sensor state changes while Preset A or Preset B is active, it will switch to the other preset.
+- **Auto-Toggle Presets With Sensor** - If the sensor state changes while Preset A or Preset B is active, it will switch to the other preset.
 
-**Preset X**: Triggering preset - Set the preset ID that, when activated, will check the sensor state and then trigger either Preset A or B accordingly.
+- **Preset X**: Triggering preset - Set the preset ID that, when activated, will check the sensor state and then trigger either Preset A or B accordingly.
 
-**Preset A**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the ON state.
+- **Preset A**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the ON state.
 
-**Preset B**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the OFF state.
+- **Preset B**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the OFF state.
 
 ---
 
