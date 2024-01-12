@@ -1,5 +1,12 @@
 # Conditional Triggering Usermod
 
+---
+
+### Author
+[Adam Matthews](https://github.com/adamsthws)
+
+---
+
 
 ### Description
 
