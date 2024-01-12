@@ -11,7 +11,7 @@
 ### Description
 
 This usermod allows dynamic control of presets based on the state of a connected sensor or switch.
-If the sensor is in an ON state, preset X is activated. Conversely, if the sensor is in an OFF state, preset Y is activated.
+If the sensor is in an ON state, preset A is activated. Conversely, if the sensor is in an OFF state, preset B is activated.
 This is ideal for creating a responsive setup that changes based on environmental inputs or physical interactions.
 
 
@@ -66,7 +66,7 @@ Find these in the user interface, under "Settings" > "Usermods".
 
 **Auto-Toggle Presets With Sensor** - If the sensor state changes while Preset A or Preset B is active, it will switch to the other preset.
 
-**Preset X**: Triggering preset - Set the preset ID that, when activated, will check the sensor state and then trigger either Preset X or Y accordingly.
+**Preset X**: Triggering preset - Set the preset ID that, when activated, will check the sensor state and then trigger either Preset A or B accordingly.
 
 **Preset A**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the ON state.
 
