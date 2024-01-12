@@ -19,9 +19,9 @@ This is ideal for creating a responsive setup that changes based on environmenta
 
 ### Example Usage
 
-- **Liquid Level** use a level-sensor to trigger a green hue when tank is full or a red hue when empty.
+- **Liquid Level**: use a level-sensor to trigger a green hue when tank is full or a red hue when empty.
 
-- **Light Sensor** use a light-sensor to trigger a calm effect during nighttime or an energetic effect when it's daylight.
+- **Light Sensor**: use a light-sensor to trigger a calm effect during nighttime or an energetic effect when it's daylight.
 
 
 ---
