@@ -2,31 +2,38 @@
 
 #include "wled.h"
 
-class UsermodConditionalTriggering : public Usermod {
+// Usermod for conditional triggering of presets based on a sensor/switch state
+class UsermodConditionalTriggering : public Usermod
+  {
   private:
-    int8_t pin = -1;
-    bool sensorNormallyOpen = true;
-    unsigned long checkInterval = 3000;
-    uint8_t presetX = 1;
-    uint8_t presetY = 2;
-    uint8_t presetZ = 99; // Preset that triggers the conditional check
-    bool debounceEnabled = true;
-    unsigned long debounceDelay = 20;
-    unsigned long lastCheckTime = 0;
-    unsigned long lastDebounceTime = 0;
-    bool lastSensorState = false;
-    bool sensorState = false;
-    bool sensorEnabled = false;
+    // Sensor pin configuration
+    int8_t pin = -1;                // GPIO pin number where sensor is connected
+    bool sensorNormallyOpen = true; // Sensor type: true for normally open, false for normally closed
 
+    // Preset configuration
+    uint8_t presetA = 1;  // Preset to trigger when sensor is ON
+    uint8_t presetB = 2;  // Preset to trigger when sensor is OFF
+    uint8_t presetX = 99; // Preset that triggers the conditional check
+
+    // Dynamic toggling between the two presets configuration
+    bool togglePresetsWithSensor = false; // Variable to store user preference
+
+    // Debounce configuration
+    bool sensorDebounceEnabled = true;        // Enable or disable debounce
+    const unsigned long debounceDelay = 100;  // Debounce delay (milliseconds)
+    unsigned long lastDebounceTime = 0;       // Time when the last debounce event occurred
+    bool lastSensorState = false;             // Last read state of the sensor
+    bool sensorState = false;                 // Current debounced state of the sensor
+    bool sensorEnabled = false;               // Indicates if the sensor is enabled
+
+    // Reads the state of the sensor with debounce logic
     bool readSensor()
     {
       bool currentReading = digitalRead(pin);
-      // For NO sensors, HIGH (no continuity) is OFF. For NC sensors, LOW (continuity) is OFF.
       bool isOff = sensorNormallyOpen ? (currentReading == HIGH) : (currentReading == LOW);
-      // Debounce logic
-      if (!debounceEnabled)
+      if (!sensorDebounceEnabled)
       {
-        return !isOff; // Return true if sensor is ON
+        return !isOff;
       }
       if ((isOff && lastSensorState) || (!isOff && !lastSensorState))
       {
@@ -34,19 +41,21 @@ class UsermodConditionalTriggering : public Usermod {
       }
       if ((millis() - lastDebounceTime) > debounceDelay)
       {
-        sensorState = !isOff; // sensorState is true if sensor is ON
+        sensorState = !isOff;
       }
       lastSensorState = !isOff;
       return sensorState;
     }
 
+    // Checks the sensor state and applies the appropriate preset
     void checkAndApplyPreset()
     {
       bool sensorState = readSensor();
-      applyPreset(sensorState ? presetX : presetY);
+      applyPreset(sensorState ? presetA : presetB);
     }
 
   public:
+    // Setup method, initializes sensor pin
     void setup()
     {
       if (pin >= 0)
@@ -56,32 +65,48 @@ class UsermodConditionalTriggering : public Usermod {
       }
     }
 
+    // Main loop method, checks sensor state and applies preset
     void loop()
     {
-      if (!sensorEnabled || millis() - lastCheckTime < checkInterval)
+      if (!sensorEnabled)
         return;
-      lastCheckTime = millis();
-
-      // Check if Preset Z ("triggeringPreset")is currently active
-      if (bri != 0 && currentPreset == presetZ)
+      // Check if Preset X, A, or B is currently active
+      if (currentPreset == presetX || currentPreset == presetA || currentPreset == presetB)
       {
-        checkAndApplyPreset();
+        // If active, read the current state of the sensor
+        bool sensorState = readSensor();
+        if (currentPreset == presetX)
+        {
+          // If the triggering preset is active, apply the appropriate preset based on sensor state
+          checkAndApplyPreset();
+        }
+        else if (togglePresetsWithSensor && (currentPreset == presetA || currentPreset == presetB))
+        {
+          // If auto toggling is enabled and either preset A or B is active, determine if the preset should change
+          uint8_t targetPreset = sensorState ? presetA : presetB;
+          if (currentPreset != targetPreset)
+          {
+            // Apply the new preset if the current one doesn't match the target
+            applyPreset(targetPreset);
+          }
+        }
       }
     }
 
+    // Adds usermod configuration to JSON object
     void addToConfig(JsonObject &root) override
     {
       JsonObject top = root.createNestedObject(F("Conditional Triggering"));
       top["pin"] = pin;
       top["sensorNormallyOpen"] = sensorNormallyOpen;
-      top["checkInterval"] = checkInterval / 1000; // Convert milliseconds to seconds
-      top["debounceEnabled"] = debounceEnabled;
-      top["debounceDelay"] = debounceDelay;
-      top["triggeringPreset"] = presetZ; // Renamed from presetZ to triggeringPreset
+      top["sensorDebounceEnabled"] = sensorDebounceEnabled;
+      top["togglePresetsWithSensor"] = togglePresetsWithSensor;
       top["presetX"] = presetX;
-      top["presetY"] = presetY;
+      top["presetA"] = presetA;
+      top["presetB"] = presetB;
     }
 
+    // Reads usermod configuration from JSON object
     bool readFromConfig(JsonObject &root)
     {
       JsonObject top = root[F("Conditional Triggering")];
@@ -89,25 +114,17 @@ class UsermodConditionalTriggering : public Usermod {
         return false;
       pin = top["pin"] | pin;
       sensorNormallyOpen = top["sensorNormallyOpen"] | sensorNormallyOpen;
-      // Convert the interval back to milliseconds
-      if (top.containsKey("Check Interval (in seconds)"))
-      {
-        checkInterval = top["Check Interval (in seconds)"].as<unsigned long>() * 1000;
-      }
-      else
-      {
-        checkInterval = 3000; // Default to 3000 milliseconds (3 seconds) if not set
-      }
-      debounceEnabled = top["debounceEnabled"] | debounceEnabled;
-      debounceDelay = top["debounceDelay"] | debounceDelay;
+      sensorDebounceEnabled = top["sensorDebounceEnabled"] | sensorDebounceEnabled;
+      togglePresetsWithSensor = top["togglePresetsWithSensor"] | togglePresetsWithSensor;
+      presetA = top["presetA"] | presetA;
+      presetB = top["presetB"] | presetB;
       presetX = top["presetX"] | presetX;
-      presetY = top["presetY"] | presetY;
-      presetZ = top["presetZ"] | presetZ;
       return true;
     }
 
+    // Returns the ID of the usermod
     uint16_t getId()
     {
       return USERMOD_ID_CONDITIONAL_TRIGGER;
     }
-};
+  };
