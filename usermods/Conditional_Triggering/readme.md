@@ -1,74 +1,75 @@
 # Conditional Triggering Usermod
 
----
 
-## Description
+### Description
+
 This usermod allows dynamic control of presets based on the state of a connected sensor or switch.
 If the sensor is in an ON state, preset X is activated. Conversely, if the sensor is in an OFF state, preset Y is activated.
 This is ideal for creating a responsive setup that changes based on environmental inputs or physical interactions.
 
----
-
-## Example Usage
-- Use a liquid level sensor to trigger a green hue when tank is full or a red hue when empty.
-- Use a light sensor to trigger a calm effect during nighttime or an energetic effect when it's daylight.
 
 ---
 
-## Features
-- **Sensor-Based Triggering**: Activates one of two presets based on the state of a physical sensor or switch.
-- **Debounce Functionality**: Avoids false triggers by implementing a debounce mechanism for the sensor.
-- **Adjustable Polling Frequency**: Configure how often the sensor's state is checked.
-- **Support for different types of sensors or switches**: Compatible with Normally-Open and Normally-Closed sensors or switches.
+### Example Usage
+
+- **Liquid Level** use a level-sensor to trigger a green hue when tank is full or a red hue when empty.
+
+- **Light Sensor** use a light-sensor to trigger a calm effect during nighttime or an energetic effect when it's daylight.
+
 
 ---
 
-## How it works
-You must first create a new preset which we'll call the 'triggering preset'. When you activate this new 'triggering' preset, the sensor's state is evaluated after which it goes on to activate another preset (either preset X or preset Y), depending on whether the sensor is open or closed.
-Having a 'triggering' preset means that preset X and preset Y can still be used outside of this usermod or when the sensor isn't present.
+### How to use
+
+**Triggering mode**
+When you activate the 'triggering' preset, the sensor's state is first evaluated, then another preset is activated (either preset A or preset B), depending on whether the sensor is open or closed.
+
+**Auto-toggle mode**
+Automatic switching between Preset A and Preset B based on changes in the sensor's state. If Preset A or B is currently active and the sensor state changes, the system will automatically switch to the other preset.
+
 
 ---
 
-## Create the 'triggering' preset
+### Create the 'triggering' preset
+
+![Screenshot Of The 'Triggering Preset' Setup](./assets/trigger_preset.jpg "Screenshot Of The 'Triggering Preset' Setup")
+
 - Add a new preset
-- Untick 'Use current state'
-- Add the following 'do nothing' API command: "&NN"
+
 - Set the preset ID to: **99**
 
-![Screenshot The 'Triggering Preset' Configuration](./assets/trigger_preset.jpg)
+- Untick 'Use current state'
+
+- Add the following 'do nothing' API command: **&NN**
+
 
 ---
 
-## Configuration
+### Configurable options
 
-Here are the configurable options - (Find them in "Settings" > "Usermods")
+Find these in the user interface, under "Settings" > "Usermods".
 
-1. **Sensor GPIO Pin**: Set the GPIO pin that your sensor/switch is connected to.
-2. **Sensor Type**: Choose between "Normally Open" or "Normally Closed" sensor/switch type.
-3. **Polling Interval**: ("checkInterval") Set how often the sensor/switch state is polled (in seconds).
-4. **Debounce**: Enable or disable debouncing for the sensor/switch.
-5. **Debounce Delay**: Choose the debounce delay time (in milliseconds). Between 10 and 30 milliseconds is usually sensible.
-6. **Triggering Preset**: Set the preset ID that, when activated, will check the sensor state and then trigger either Preset X or Y accordingly.
-7. **Preset X**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the ON state.
-8. **Preset Y**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the OFF state.
+![Screenshot of The Usermod Settings Page](./assets/usermod_settings.jpg "Screenshot of The Usermod Settings Page")
 
----
+**Sensor Pin**: Set the GPIO pin that your sensor/switch is connected to.
 
-## Notes
-**Polling Interval ("checkInterval" setting)**
-    Sensors with Slow State Changes:
-    If your sensor's state changes infrequently (e.g. a light sensor detecting day/night), a longer checkInterval might be more appropriate to avoid unnecessary processing. (e.g. 30 seconds)
+**Sensor Type**: Choose between "Normally Open" or "Normally Closed" sensor/switch type.
 
-    Sensors with Fast State Changes:
-    For sensors that might change state quickly and frequently (e.g., a motion sensor), a shorter checkInterval could be beneficial to react promptly to changes. (e.g. 3 seconds)
+**Sensor Debounce**: Enable or disable debouncing for the sensor/switch. (Cleans up noisy sensor/switch signals).
 
-    Power Conservation:
-    In battery-powered setups, a longer checkInterval can help conserve power.
+**Auto-Toggle Presets With Sensor** - If the sensor state changes while Preset A or Preset B is active, it will switch to the other preset.
+
+**Preset X**: Triggering preset - Set the preset ID that, when activated, will check the sensor state and then trigger either Preset X or Y accordingly.
+
+**Preset A**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the ON state.
+
+**Preset B**: Set the preset ID that will be activated by the Triggering Preset when the sensor is in the OFF state.
 
 ---
 
-## Installation
-To enable this usermod, add the following new line under "build_flags =" for your board:
+### Installation
+
+To enable this usermod, within 'platformio.ini' or 'platformio_override.ini', add the following new line under "build_flags =" for your board:
 ```
 -D USERMOD_CONDITIONAL_TRIGGERING
 ```
