@@ -19,12 +19,14 @@ This is ideal for creating a responsive setup that changes based on environmenta
 
 ### Example Usage
 
-- **Light Sensor**: use a light-sensor to trigger a calm effect during nighttime or an energetic effect when it's daylight.
+- **Light Sensor**:
+  use a light-sensor to trigger a calm effect during nighttime or an energetic effect when it's daylight.
 
-- **Liquid Level**: use a level-sensor to trigger a red effect when a water tank is empty or a green effect otherwise.
+- **Liquid Level**:
+  use a level-sensor to trigger a red effect when a water tank is empty or a green effect otherwise.
 
-- Combine it with the 'multi_relay' usermod... 
-  e.g. If water tank has liquid, turn on water-pump (PresetA), otherwise start flashing red warning lights (PresetB).
+- **Trigger Relays**
+  Combine it with the 'multi_relay' usermod. e.g. If water tank has liquid, turn on water-pump (PresetA), otherwise start flashing red warning lights (PresetB).
 
 
 ---
