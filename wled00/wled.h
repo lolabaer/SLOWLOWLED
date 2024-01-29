@@ -112,7 +112,7 @@
   #include "my_config.h"
 #endif
 
-#include <ESPAsyncWebServer.h>
+#include <PsychicHttp.h>
 #ifdef WLED_ADD_EEPROM_SUPPORT
   #include <EEPROM.h>
 #endif
@@ -708,7 +708,7 @@ WLED_GLOBAL bool ledStatusState _INIT(false); // the current LED state
 #endif
 
 // server library objects
-WLED_GLOBAL AsyncWebServer server _INIT_N(((80)));
+WLED_GLOBAL PsychicHttpServer server _INIT_N(((80)));
 #ifdef WLED_ENABLE_WEBSOCKETS
 WLED_GLOBAL AsyncWebSocket ws _INIT_N((("/ws")));
 #endif
