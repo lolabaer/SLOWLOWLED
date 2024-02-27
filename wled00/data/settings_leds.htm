@@ -23,6 +23,7 @@
 		function isD2P(t) { return t > 47 && t < 64; }                      // is digital 2 pin type
 		function is16b(t) { return t == 26 || t == 29 }                     // is digital 16 bit type
 		function isVir(t) { return t >= 80 && t < 96; }                     // is virtual type
+		function isHub75(t) { return t >= 100 && t <= 110; }                // is Hub75 type
 		function hideHub75() {
 		var s = d.getElementsByTagName("select");
 			for (i=0; i<s.length; i++) {
@@ -224,9 +225,9 @@
 				// is the field a LED type?
 				var n = s.name.substring(2);
 				var t = parseInt(s.value);
-				gId("p0d"+n).innerHTML = isVir(t) ? "IP address:" : isD2P(t) ? "Data GPIO:" : (t > 41) ? "GPIOs:" : "GPIO:";
+				gId("p0d"+n).innerHTML = isHub75(t) ? "Chain Length:" : isVir(t) ? "IP address:" : isD2P(t) ? "Data GPIO:" : (t > 41) ? "GPIOs:" : "GPIO:";
 				gId("p1d"+n).innerHTML = isD2P(t) ? "Clk GPIO:" : "";
-				gId("abl"+n).style.display = (!ablEN || isVir(t) || isAna(t)) ? "none" : "inline";
+				gId("abl"+n).style.display = (!ablEN || isVir(t) || isAna(t) || isHub75(t)) ? "none" : "inline";
 				//var LK = d.getElementsByName("L1"+n)[0]; // clock pin
 
 				memu += getMem(t, n); // calc memory
@@ -255,13 +256,13 @@
 				}
 				gId("rf"+n).onclick = (t == 31) ? (()=>{return false}) : (()=>{});  // prevent change for TM1814
 				gRGBW |= isRGBW = ((t > 17 && t < 22) || (t > 28 && t < 32) || (t > 40 && t < 46 && t != 43) || t == 88); // RGBW checkbox, TYPE_xxxx values from const.h
-				gId("co"+n).style.display = (isVir(t) || isAna(t)) ? "none":"inline";  // hide color order for PWM
+				gId("co"+n).style.display = (isVir(t) || isAna(t) || isHub75(t)) ? "none":"inline";  // hide color order for PWM
 				gId("dig"+n+"w").style.display = (isDig(t) && isRGBW) ? "inline":"none";  // show swap channels dropdown
 				if (!(isDig(t) && isRGBW)) d.Sf["WO"+n].value = 0; // reset swapping
-				gId("dig"+n+"c").style.display = (isAna(t)) ? "none":"inline";  // hide count for analog
-				gId("dig"+n+"r").style.display = (isVir(t)) ? "none":"inline";  // hide reversed for virtual
-				gId("dig"+n+"s").style.display = (isVir(t) || isAna(t)) ? "none":"inline";  // hide skip 1st for virtual & analog
-				gId("dig"+n+"f").style.display = (isDig(t)) ? "inline":"none";  // hide refresh
+				gId("dig"+n+"c").style.display = (isAna(t) || isHub75(t)) ? "none":"inline";  // hide count for analog
+				gId("dig"+n+"r").style.display = (isVir(t) || isHub75(t)) ? "none":"inline";  // hide reversed for virtual
+				gId("dig"+n+"s").style.display = (isVir(t) || isAna(t)) || isHub75(t) ? "none":"inline";  // hide skip 1st for virtual & analog
+				gId("dig"+n+"f").style.display = (isDig(t) ) ? "inline":"none";  // hide refresh
 				gId("dig"+n+"a").style.display = (isRGBW) ? "inline":"none";  // auto calculate white
 				gId("dig"+n+"l").style.display = (isD2P(t) || isPWM(t)) ? "inline":"none";  // bus clock speed / PWM speed (relative) (not On/Off)
 				gId("rev"+n).innerHTML = isAna(t) ? "Inverted output":"Reversed (rotated 180°)";  // change reverse text for analog
@@ -426,9 +427,9 @@ ${i+1}:
 <!--option value="81">E1.31 RGB (network)</option-->
 <option value="82">Art-Net RGB (network)</option>
 <option value="88">DDP RGBW (network)</option>
-<option value="101">Hub75Matrix 32x32</option>
-<option value="102">Hub75Matrix 64x32</option>
-<option value="103">Hub75Matrix 64x64</option>
+<option value="101">Hub75 Matrix 32x32</option>
+<option value="102">Hub75 Matrix 64x32</option>
+<option value="103">Hub75 Matrix 64x64</option>
 </select><br>
 <div id="abl${i}">
 mA/LED: <select name="LAsel${i}" onchange="enLA(this,${i});UI();">

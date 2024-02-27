@@ -662,7 +662,7 @@ BusHub75Matrix::BusHub75Matrix(BusConfig &bc) : Bus(bc.type, bc.start, bc.autoWh
 
 #elif defined(ESP32_FORUM_PINOUT) // Common format for boards designed for SmartMatrix
 
-  USER_PRINTLN("MatrixPanel_I2S_DMA - ESP32_FORUM_PINOUT");
+  DEBUG_PRINTLN("MatrixPanel_I2S_DMA - ESP32_FORUM_PINOUT");
 
 /*
     ESP32 with SmartMatrix's default pinout - ESP32_FORUM_PINOUT
@@ -690,7 +690,7 @@ BusHub75Matrix::BusHub75Matrix(BusConfig &bc) : Bus(bc.type, bc.start, bc.autoWh
   mxconfig.gpio.e = 12;
 
 #else
-  USER_PRINTLN("MatrixPanel_I2S_DMA - Default pins");
+  DEBUG_PRINTLN("MatrixPanel_I2S_DMA - Default pins");
   /*
    https://github.com/mrfaptastic/ESP32-HUB75-MatrixPanel-DMA?tab=readme-ov-file
 
