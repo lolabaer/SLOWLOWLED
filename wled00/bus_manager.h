@@ -356,7 +356,8 @@ class BusHub75Matrix : public Bus {
   private:
     MatrixPanel_I2S_DMA *display = nullptr;
     HUB75_I2S_CFG mxconfig;
-    uint8_t r, g, b, x, y;
+    uint_fast8_t r, g, b;
+    uint_fast16_t x, y;
     
 };
 #endif
