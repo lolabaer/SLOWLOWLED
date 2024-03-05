@@ -272,8 +272,8 @@ bool writeObjectToFile(const char* file, const char* key, JsonDocument* content)
   #endif
 
   size_t pos = 0;
-  f = WLED_FS.open(file, "r+");
-  if (!f && !WLED_FS.exists(file)) f = WLED_FS.open(file, "w+");
+  char fileName[129]; strncpy_P(fileName, file, 128); fileName[128] = 0; //use PROGMEM safe copy as FS.open() does not
+  f = WLED_FS.open(fileName, WLED_FS.exists(fileName) ? "r+" : "w+");
   if (!f) {
     DEBUGFS_PRINTLN(F("Failed to open!"));
     return false;
@@ -340,7 +340,8 @@ bool readObjectFromFile(const char* file, const char* key, JsonDocument* dest)
     DEBUGFS_PRINTF("Read from %s with key %s >>>\n", file, (key==nullptr)?"nullptr":key);
     uint32_t s = millis();
   #endif
-  f = WLED_FS.open(file, "r");
+  char fileName[129]; strncpy_P(fileName, file, 128); fileName[128] = 0; //use PROGMEM safe copy as FS.open() does not
+  f = WLED_FS.open(fileName, "r");
   if (!f) return false;
 
   if (key != nullptr && !bufferedFind(key)) //key does not exist in file
@@ -416,7 +417,7 @@ static const uint8_t *getPresetCache(size_t &size) {
   }
 
   if (!presetsCached) {
-    File file = WLED_FS.open("/presets.json", "r");
+    File file = WLED_FS.open(FPSTR(getPresetsFileName()), "r");
     if (file) {
       presetsCachedTime = presetsModifiedTime;
       presetsCachedSize = 0;
@@ -446,7 +447,7 @@ bool handleFileRead(AsyncWebServerRequest* request, String path){
     return true;
   }*/
   #if defined(BOARD_HAS_PSRAM) && defined(WLED_USE_PSRAM)
-  if (path.endsWith("/presets.json")) {
+  if (path.endsWith(FPSTR(getPresetsFileName()))) {
     size_t psize;
     const uint8_t *presets = getPresetCache(psize);
     if (presets) {
